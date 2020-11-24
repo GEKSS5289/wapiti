@@ -3,8 +3,8 @@
     <div class="mng-center-nav">
       <router-link to="/story" tag="a">事迹管理</router-link>
       <router-link to="/video" tag="a">视频管理</router-link>
-      <router-link to="s" tag="a">任务管理</router-link>
-      <router-link to="s" tag="a">用户管理</router-link>
+      <router-link to="/task" tag="a">任务管理</router-link>
+      <router-link to="/admin" tag="a">用户管理</router-link>
     </div>
     <div class="main-mng">
       <router-view/>

@@ -1,6 +1,6 @@
 <template>
   <div class="header-nav-box">
-      <h1>WAPITI🦒CMS</h1>
+      <h1>WAPITI🌲CMS</h1>
   </div>
 </template>
 

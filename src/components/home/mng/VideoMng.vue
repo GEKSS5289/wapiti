@@ -68,7 +68,7 @@ export default defineComponent({
 .video-mng-box{
   margin-top:50px;
   .video-list{
-    height: 300px;
+    height: 200px;
     overflow-y: auto;
     .video-item{
       margin-bottom: 50px;
@@ -136,6 +136,7 @@ export default defineComponent({
       color: #1ABC9C;
       font-weight: bold;
       height: 30px;
+      cursor: pointer;
     }
   }
 }

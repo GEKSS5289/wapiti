@@ -21,6 +21,7 @@ import CheckPending from "@/components/home/CheckPending.vue";
 import TaskContainer from "@/components/home/TaskContainer.vue";
 import MngCenter from "@/components/home/MngCenter.vue";
 import Preview from "@/components/home/Preview.vue";
+
 export default defineComponent({
   name: 'Home',
   components: {
@@ -29,7 +30,8 @@ export default defineComponent({
     CheckPending,
     TaskContainer,
     MngCenter,
-    Preview
+    Preview,
+
   }
 })
 </script>
@@ -47,6 +49,7 @@ export default defineComponent({
   .page-home-middle{
     margin-top: 30px;
     display: flex;
+    margin-bottom: 120px;
   }
   .page-home-preview{
     margin-top: 30px;

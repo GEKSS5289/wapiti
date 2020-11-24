@@ -17,6 +17,16 @@ const routes: Array<RouteRecordRaw> = [
         path:'/video',
         name:'Video',
         component:()=>import('../components/home/mng/VideoMng.vue')
+      },
+      {
+        path:'/task',
+        name:'Task',
+        component:()=>import('../components/home/mng/TaskMng.vue')
+      },
+      {
+        path:'/admin',
+        name:'Admin',
+        component:()=>import('../components/home/mng/AdminMng.vue')
       }
     ]
   },
