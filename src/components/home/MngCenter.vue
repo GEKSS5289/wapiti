@@ -24,7 +24,7 @@ export default defineComponent({
 @import "../../assets/style/mixin";
 .mng-center-box{
   @include generalBox();
-  height: 650px;
+  //height: 650px;
   flex: 2;
   .mng-center-nav{
     //background-color: red;
@@ -35,6 +35,7 @@ export default defineComponent({
   }
   .main-mng{
     margin-top: 20px;
+
   }
 }
 </style>

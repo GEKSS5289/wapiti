@@ -44,11 +44,13 @@
     </div>
     <div class="video-create">
       <h1>视频上传</h1>
-
       <label for="file">
         <img class="file-img" src="../../../../public/static/add.png" alt="">
       </label>
       <input class="file-input" id="file" type="file">
+      <h1 class="file-info-name">董帆.jpg</h1>
+      <h1 class="file-info-size">32kb</h1>
+      <div class="upload-btn">上传</div>
     </div>
   </div>
 </template>
@@ -115,6 +117,7 @@ export default defineComponent({
     display: flex;
     flex-direction: column;
     align-items: center;
+
     .file-img{
       cursor:pointer;
       margin-top:30px;
@@ -124,6 +127,15 @@ export default defineComponent({
     .file-input{
 
       display: none;
+    }
+    .upload-btn{
+      border-radius: 10px;
+      border: 1px solid #1ABC9C;
+      width: 80px;
+      line-height: 30px;
+      color: #1ABC9C;
+      font-weight: bold;
+      height: 30px;
     }
   }
 }
