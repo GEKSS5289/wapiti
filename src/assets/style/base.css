@@ -1,0 +1,22 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+
+a{
+    color: #42b983;
+    font-size: 20px;
+    font-weight: bold;
+    transition: all 0.8s;
+    border-bottom: 2px solid white;
+    padding: 10px !important;
+}
+
+a:hover{
+  border-bottom: 2px solid #42b983;
+}
+.router-link-active{
+    background-color: #42b983;
+    color: white;
+}

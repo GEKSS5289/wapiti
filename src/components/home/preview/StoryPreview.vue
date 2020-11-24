@@ -1,11 +1,12 @@
 <template>
-$END$
+  fsadfsafsaf
 </template>
 
 <script lang="ts">
-  import { defineComponent } from 'vue'
+import {defineComponent} from 'vue'
+
 export default defineComponent({
-name: "StoryPreview"
+  name: "StoryPreview"
 })
 </script>
 
