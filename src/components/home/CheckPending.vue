@@ -7,7 +7,7 @@
         <div class="check-pending-info">
           <div class="check-pending-desc">
             <h3 class="res-name">资源名称:{{item.resName}}</h3>
-            <h3 class="push-auth">上传者:{{item.publishAdminName}}</h3>
+            <h3 class="push-auth">上传者:{{item.publishAdminName}} </h3>
           </div>
           <div class="check-pending-op" v-if='isRoots'>
 
