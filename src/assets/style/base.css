@@ -20,3 +20,24 @@ a:hover{
     background-color: #42b983;
     color: white;
 }
+
+h1{
+    cursor: pointer !important;
+}
+h2{
+    cursor: pointer !important;
+}
+
+.low-task{
+  background-color: #48C9B0 !important;
+}
+
+.middle-task{
+    background-color: #F7DC6F !important;
+}
+
+.hight-task{
+    background-color: #E74C3C !important;
+}
+
+

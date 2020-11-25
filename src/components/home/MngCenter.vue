@@ -3,8 +3,11 @@
     <div class="mng-center-nav">
       <router-link to="/story" tag="a">事迹管理</router-link>
       <router-link to="/video" tag="a">视频管理</router-link>
-      <router-link to="/task" tag="a">任务管理</router-link>
-      <router-link to="/admin" tag="a">用户管理</router-link>
+
+      <router-link to="/task" tag="a" v-if="isRoot" >任务管理</router-link>
+
+
+      <router-link to="/admin" tag="a" v-if="isRoot">用户管理</router-link>
     </div>
     <div class="main-mng">
       <router-view/>
@@ -14,9 +17,16 @@
 
 <script lang="ts">
 import {defineComponent} from 'vue'
+import {useStore} from "vuex";
 
 export default defineComponent({
-  name: "MngCenter"
+  name: "MngCenter",
+  setup(){
+
+    return{
+      isRoot:localStorage.getItem("isRoot")=='true'?1:0
+    }
+  }
 })
 </script>
 

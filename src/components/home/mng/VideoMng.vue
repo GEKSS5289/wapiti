@@ -1,44 +1,14 @@
 <template>
   <div class="video-mng-box">
-    <div class="video-list">
-      <div class="video-item">
-        <video controls src="https://shushun.oss-cn-shenzhen.aliyuncs.com/sue-blog-file-repo/%E8%A7%A3%E6%94%BE.mp4"/>
+    <div class="video-list" v-if="resData.datas.length!=0">
+      <div class="video-item" v-for="(item,index) in resData.datas" :key="item.id">
+        <video controls :src="item.resPath"/>
         <div class="video-info">
-          <h1 class="video-name">视频名:解放</h1>
-          <h1 class="video-upload-auth">上传者:舒顺</h1>
-          <h1 class="stop-play-btn" v-if="true">禁止播放</h1>
-          <h1 class="stop-play-btn" v-else>恢复播放</h1>
-          <h1 class="update-btn">修改</h1>
-        </div>
-      </div>
-      <div class="video-item">
-        <video controls src="https://shushun.oss-cn-shenzhen.aliyuncs.com/sue-blog-file-repo/%E8%A7%A3%E6%94%BE.mp4"/>
-        <div class="video-info">
-          <h1 class="video-name">视频名:解放</h1>
-          <h1 class="video-upload-auth">上传者:舒顺</h1>
-          <h1 class="stop-play-btn" v-if="true">禁止播放</h1>
-          <h1 class="stop-play-btn" v-else>恢复播放</h1>
-          <h1 class="update-btn">修改</h1>
-        </div>
-      </div>
-      <div class="video-item">
-        <video controls src="https://shushun.oss-cn-shenzhen.aliyuncs.com/sue-blog-file-repo/%E8%A7%A3%E6%94%BE.mp4"/>
-        <div class="video-info">
-          <h1 class="video-name">视频名:解放</h1>
-          <h1 class="video-upload-auth">上传者:舒顺</h1>
-          <h1 class="stop-play-btn" v-if="true">禁止播放</h1>
-          <h1 class="stop-play-btn" v-else>恢复播放</h1>
-          <h1 class="update-btn">修改</h1>
-        </div>
-      </div>
-      <div class="video-item">
-        <video controls src="https://shushun.oss-cn-shenzhen.aliyuncs.com/sue-blog-file-repo/%E8%A7%A3%E6%94%BE.mp4"/>
-        <div class="video-info">
-          <h1 class="video-name">视频名:解放</h1>
-          <h1 class="video-upload-auth">上传者:舒顺</h1>
-          <h1 class="stop-play-btn" v-if="true">禁止播放</h1>
-          <h1 class="stop-play-btn" v-else>恢复播放</h1>
-          <h1 class="update-btn">修改</h1>
+          <h1 class="video-name">视频名:{{item.resName}}</h1>
+          <h1 class="video-upload-auth">上传者:{{item.publishAdminName}}</h1>
+          <h1 class="stop-play-btn" v-if="item.resDel" @click="controlRes(item.id)">禁止播放</h1>
+          <h1 class="stop-play-btn" v-else @click="controlRes(item.id)">恢复播放</h1>
+<!--          <h1 class="update-btn">修改</h1>-->
         </div>
       </div>
     </div>
@@ -47,19 +17,74 @@
       <label for="file">
         <img class="file-img" src="../../../../public/static/add.png" alt="">
       </label>
-      <input class="file-input" id="file" type="file">
-      <h1 class="file-info-name">董帆.jpg</h1>
-      <h1 class="file-info-size">32kb</h1>
-      <div class="upload-btn">上传</div>
+      <input class="file-input" id="file" type="file" @change="fileSelect" accept="video/mp4">
+      <h1 class="file-info-name">{{resData.filename}}</h1>
+      <h1 class="file-info-size" v-if="resData.filesize">{{resData.filesize}}MB</h1>
+      <h1 class="file-info-size" v-else>未上传文件</h1>
+      <div class="upload-btn" @click="uploadFile" v-if="resData.filename">上传</div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue'
-
+import {defineComponent,reactive} from 'vue'
+import {useStore} from "vuex";
+import {ResModel, StoryForm, StoryModel} from "@/model/datas";
+import UpdateCard from "@/components/common/UpdateCard.vue";
+import axios from "axios";
+import apis from "@/common/apis";
+import router from "@/router";
 export default defineComponent({
-  name: "VideoMng"
+  name: "VideoMng",
+  setup(){
+
+    const resData = reactive({
+      datas:Array<ResModel>(),
+      filename:'',
+      filesize:0.0,
+    })
+    const formdata = new FormData()
+    const store = useStore()
+    initData()
+    function initData(){
+      axios.get(apis.apiUrl.res).then(res=>{
+        for(let i = 0;i<res.data.data.length;i++){
+          resData.datas.push(res.data.data[i])
+        }
+      })
+    }
+
+    function controlRes(resId:number){
+      axios.put(apis.apiUrl.res+resId).then(res=>{
+        router.go(0)
+      })
+    }
+
+    function fileSelect(file:any){
+      resData.filename = file.target.files[0].name
+      resData.filesize = Number((file.target.files[0].size/1024/1024).toString().match(/^\d+(?:\.\d{0,2})?/))
+      formdata.append("file",file.target.files[0])
+    }
+
+    function uploadFile(){
+      resData.filename = '';
+      resData.filesize = 0
+      axios.post(apis.apiUrl.res+localStorage.getItem("adminId"),formdata,{
+        headers:{'Content-Type':'multipart/form-data'}
+      }).then(res=>{
+        console.log("ok")
+        formdata.delete("file")
+        router.go(0)
+      })
+    }
+
+    return{
+      resData,
+      controlRes,
+      fileSelect,
+      uploadFile
+    }
+  }
 })
 </script>
 

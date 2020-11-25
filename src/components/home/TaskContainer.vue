@@ -1,61 +1,60 @@
 <template>
   <div class="task-container-box">
     <h1 style="text-align: left;margin-bottom: 10px">任务列表</h1>
-    <div class="task-list">
-      <div class="task-item">
-        <h1 class="task-content">做饭</h1>
-        <h2 class="task-remark">给心爱的人好好烹饪一顿美食</h2>
+    <div class="task-list" v-if="taskData.datas.length != 0">
+      <div class="task-item" v-for="(item,index) in taskData.datas"
+           :class="{'task-l':item.taskLevel==0,'task-m':item.taskLevel==1,'task-h':item.taskLevel==2}"
+      >
+        <h1 class="task-title">{{item.taskTitle}}</h1>
+        <h2 class="task-remark">{{item.taskContent}}</h2>
         <div class="task-info">
-          <h2 class="task-end-time">2020-5.5</h2>
-          <h2 class="task-status">FINISH</h2>
-          <h2 class="task-performer">Sue</h2>
-        </div>
-      </div>
-      <div class="task-item">
-        <h1 class="task-content">做饭</h1>
-        <h2 class="task-remark">给心爱的人好好烹饪一顿美食</h2>
-        <div class="task-info">
-          <h2 class="task-end-time">2020-5.5</h2>
-          <h2 class="task-status">FINISH</h2>
-          <h2 class="task-performer">Sue</h2>
-        </div>
-      </div>
-      <div class="task-item">
-        <h1 class="task-content">做饭</h1>
-        <h2 class="task-remark">给心爱的人好好烹饪一顿美食</h2>
-        <div class="task-info">
-          <h2 class="task-end-time">2020-5.5</h2>
-          <h2 class="task-status">FINISH</h2>
-          <h2 class="task-performer">Sue</h2>
-        </div>
-      </div>
-      <div class="task-item">
-        <h1 class="task-content">做饭</h1>
-        <h2 class="task-remark">给心爱的人好好烹饪一顿美食</h2>
-        <div class="task-info">
-          <h2 class="task-end-time">2020-5.5</h2>
-          <h2 class="task-status">FINISH</h2>
-          <h2 class="task-performer">Sue</h2>
-        </div>
-      </div>
-      <div class="task-item">
-        <h1 class="task-content">做饭</h1>
-        <h2 class="task-remark">给心爱的人好好烹饪一顿美食</h2>
-        <div class="task-info">
-          <h2 class="task-end-time">2020-5.5</h2>
-          <h2 class="task-status">FINISH</h2>
-          <h2 class="task-performer">Sue</h2>
+          <h2 class="task-status" @click="finish(item.id)">FINISH</h2>
+          <h2 class="task-performer">{{item.publisherName}}</h2>
         </div>
       </div>
     </div>
+    <h1 v-else class="task-null">😘暂时没有任务哟!</h1>
   </div>
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue'
+import {defineComponent, reactive} from 'vue'
+import {TaskModel} from "@/model/datas";
+import axios from "axios";
+import apis from "@/common/apis";
+import {useStore} from "vuex";
+import router from "@/router";
 
 export default defineComponent({
-  name: "TaskList"
+  name: "TaskList",
+  setup(){
+    const store = useStore()
+    const taskData = reactive({
+      datas:Array<TaskModel>()
+    })
+
+    initDataTask()
+    function initDataTask(){
+      axios.get(apis.apiUrl.task+'me/'+localStorage.getItem("adminId")).then(res=>{
+        console.log(res)
+        for(let i = 0;i<res.data.data.length;i++){
+          taskData.datas.push(res.data.data[i])
+        }
+      })
+    }
+
+    function finish(taskId:number){
+
+        axios.put(apis.apiUrl.task+"finish/"+taskId).then(res=>{
+          router.go(0)
+        })
+    }
+
+    return{
+      taskData,
+      finish
+    }
+  }
 })
 </script>
 
@@ -70,6 +69,15 @@ export default defineComponent({
     //padding: 5px;
     height: 650px;
     overflow-y: auto;
+    .task-l{
+      border-left: 5px solid #42b983 !important;
+    }
+    .task-m{
+      border-left: 5px solid #F7DC6F !important;
+    }
+    .task-h{
+      border-left: 5px solid #E74C3C !important;
+    }
     .task-item{
       margin-bottom: 10px;
       text-align: left;
@@ -100,6 +108,12 @@ export default defineComponent({
         }
       }
     }
+  }
+  .task-null{
+    padding: 10px;
+    height: 100px;
+    line-height: 100px;
+    @include shadow();
   }
 }
 </style>

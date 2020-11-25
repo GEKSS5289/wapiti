@@ -1,4 +1,5 @@
 <template>
+  <header-nav></header-nav>
   <div class="page-home">
     <div class="page-home-header">
       <cms-mng></cms-mng>
@@ -21,7 +22,7 @@ import CheckPending from "@/components/home/CheckPending.vue";
 import TaskContainer from "@/components/home/TaskContainer.vue";
 import MngCenter from "@/components/home/MngCenter.vue";
 import Preview from "@/components/home/Preview.vue";
-
+import HeaderNav from "@/components/common/HeaderNav.vue";
 export default defineComponent({
   name: 'Home',
   components: {
@@ -31,7 +32,7 @@ export default defineComponent({
     TaskContainer,
     MngCenter,
     Preview,
-
+    HeaderNav
   }
 })
 </script>
@@ -40,6 +41,7 @@ export default defineComponent({
 <style lang="scss">
 
 .page-home{
+  position: relative;
   width: 1226px;
   margin: 0 auto;
   .page-home-header{

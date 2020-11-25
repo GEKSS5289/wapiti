@@ -1,14 +1,31 @@
 <template>
   <div class="cms-me-box">
-    <h1 class="cms-me-icon">🙃</h1>
-    <h4 class="cms-me-admin-name">舒顺</h4>
+    <h1 class="cms-me-icon">{{face}}</h1>
+    <h4 class="cms-me-admin-name">{{name}}</h4>
+    <h1 @click="logout">退出</h1>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import router from "@/router";
 export default defineComponent({
-name: "CmsMng"
+  name: "CmsMng",
+  setup(){
+    function logout(){
+      localStorage.setItem("admin","")
+      localStorage.setItem("isRoot","")
+      localStorage.setItem("face","")
+      localStorage.setItem("name","")
+      router.push('/')
+    }
+
+    return{
+      face:localStorage.getItem("face"),
+      name:localStorage.getItem("name"),
+      logout
+    }
+  }
 })
 </script>
 
@@ -24,11 +41,11 @@ name: "CmsMng"
   justify-content: center;
   height: 200px;
   .cms-me-icon{
-    font-size: 120px;
+    font-size: 80px;
   }
   .cms-me-admin-name{
     font-size: 20px;
-    margin-top: 30px;
+    margin-top: 10px;
   }
 }
 </style>

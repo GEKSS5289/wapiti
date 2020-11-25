@@ -1,42 +1,73 @@
 <template>
   <div class="check-pending-box">
     <h1>待审核资源</h1>
-    <div class="check-pending-list">
-      <div class="check-pending-item">
-        <video controls src="https://shushun.oss-cn-shenzhen.aliyuncs.com/sue-blog-file-repo/%E8%A7%A3%E6%94%BE.mp4"></video>
+    <div class="check-pending-list" v-if="resData.datas.length">
+      <div class="check-pending-item" v-for="(item,index) in resData.datas" :key="item.id">
+        <video controls :src="item.resPath"></video>
         <div class="check-pending-info">
           <div class="check-pending-desc">
-            <h3 class="res-name">资源名称:解放</h3>
-            <h3 class="push-auth">上传者:舒顺</h3>
+            <h3 class="res-name">资源名称:{{item.resName}}</h3>
+            <h3 class="push-auth">上传者:{{item.publishAdminName}}</h3>
           </div>
-          <div class="check-pending-op">
-            <div class="pass">通过</div>
-            <div class="no-pass">不通过</div>
-          </div>
-        </div>
-      </div>
-      <div class="check-pending-item">
-        <video controls src="https://shushun.oss-cn-shenzhen.aliyuncs.com/sue-blog-file-repo/%E8%A7%A3%E6%94%BE.mp4"></video>
-        <div class="check-pending-info">
-          <div class="check-pending-desc">
-            <h3 class="res-name">资源名称:解放</h3>
-            <h3 class="push-auth">上传者:舒顺</h3>
-          </div>
-          <div class="check-pending-op">
-            <div class="pass">通过</div>
-            <div class="no-pass">不通过</div>
+          <div class="check-pending-op" v-if='isRoots'>
+
+            <div class="pass" @click="pass(item.id)">通过</div>
+            <div class="no-pass" @click="nopass(item.id)">不通过</div>
           </div>
         </div>
       </div>
     </div>
+    <h1 class="no-res-check" v-else>😊暂时没有待审核资源</h1>
   </div>
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue'
+import {defineComponent, reactive, ref} from 'vue'
+import {ResModel} from "@/model/datas";
+import axios from "axios";
+import apis from "@/common/apis";
+import router from "@/router";
+import {useStore} from "vuex";
 
 export default defineComponent({
-  name: "CheckPending"
+  name: "CheckPending",
+  setup(){
+    console.log(useStore().getters.getAdminId)
+    const resData = reactive({
+      datas:Array<ResModel>(),
+    })
+
+    initData()
+    function initData(){
+
+      axios.get(apis.apiUrl.res+'check').then(res=>{
+        for(let i = 0;i<res.data.data.length;i++){
+          resData.datas.push(res.data.data[i])
+        }
+      })
+    }
+
+    function pass(resId:number){
+      axios.put(apis.apiUrl.res+'pass/'+resId).then(res=>{
+        router.go(0)
+      })
+    }
+
+    function nopass(resId:number){
+      axios.put(apis.apiUrl.res+'nopass/'+resId).then(res=>{
+        router.go(0)
+      })
+    }
+
+
+
+    return{
+      resData,
+      pass,
+      nopass,
+      isRoots:localStorage.getItem("isRoot")=='true'?1:0
+    }
+  }
 })
 </script>
 
@@ -105,6 +136,14 @@ export default defineComponent({
       }
 
     }
+  }
+  .no-res-check{
+    margin-top: 50px;
+    padding: 5px;
+    background-color:#76D7C4;
+    color: white;
+    //text-align: left;
+    border-left:5px solid #42b983;
   }
 }
 </style>

@@ -1,65 +1,105 @@
 <template>
   <div class="story-mng-box">
     <div class="story-header">
-      <input type="text" placeholder="事迹标题">
-      <textarea placeholder="我有灵感了....."></textarea>
-      <div class="dynamic-push">发表</div>
+      <input type="text" placeholder="事迹标题" v-model="pushData.title">
+      <textarea placeholder="我有灵感了....." v-model="pushData.content"></textarea>
+      <div class="update-push" @click="pushStory">发表</div>
     </div>
-    <div class="story-list">
-      <div class="story-item">
+    <div class="story-list" v-if="storyData.datas.length!=0">
+      <div class="story-item" v-for="(item,index) in storyData.datas" :key="item.id">
         <div class="story-info">
-          <h1 class="story-name">我们</h1>
-          <h1 class="story-content">内容XXXXXXXXX</h1>
+          <h1 class="story-name">{{item.title}}</h1>
+          <h1 class="story-content">{{item.content}}</h1>
+          <h1 class="story-time">{{item.createdTime}}</h1>
         </div>
         <div class="story-op">
-          <h1>删除</h1>
-          <h1>修改</h1>
+          <h1 @click="deleteStory(item.id)">删除</h1>
+          <h1 @click="updateStory(item.id)">修改</h1>
         </div>
-
-      </div>
-      <div class="story-item">
-        <div class="story-info">
-          <h1 class="story-name">我们</h1>
-          <h1 class="story-content">内容XXXXXXXXX</h1>
-        </div>
-        <div class="story-op">
-          <h1>删除</h1>
-          <h1>修改</h1>
-        </div>
-
-      </div>
-      <div class="story-item">
-        <div class="story-info">
-          <h1 class="story-name">我们</h1>
-          <h1 class="story-content">内容XXXXXXXXX</h1>
-        </div>
-        <div class="story-op">
-          <h1>删除</h1>
-          <h1>修改</h1>
-        </div>
-
-      </div>
-      <div class="story-item">
-        <div class="story-info">
-          <h1 class="story-name">我们</h1>
-          <h1 class="story-content">内容XXXXXXXXX</h1>
-        </div>
-        <div class="story-op">
-          <h1>删除</h1>
-          <h1>修改</h1>
-        </div>
-
       </div>
     </div>
+    <h1 v-else class="no-story" >啥事迹也没有😭</h1>
   </div>
-
+  <update-card :storyId="storyIdNum" v-if="updateCardStatus" @go-back="back"></update-card>
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue'
+import {defineComponent, reactive, ref} from 'vue'
 
+import {pushData,pushStory,storyData,initStoryData} from "@/script/story/storyScript";
+import {useStore} from "vuex";
+import {StoryForm, StoryModel} from "@/model/datas";
+import UpdateCard from "@/components/common/UpdateCard.vue";
+import axios from "axios";
+import apis from "@/common/apis";
+import router from "@/router";
 export default defineComponent({
-  name: "StoryMng"
+  name: "StoryMng",
+  components:{
+    UpdateCard
+  },
+  setup(){
+
+    const store = useStore()
+    const pushData = reactive({
+      content:'',
+      title:'',
+    })
+    const storyData = reactive({
+      datas:Array<StoryModel>()
+    })
+    const storyIdNum = ref(0)
+    const updateCardStatus = ref(false)
+
+
+    initStoryData()
+
+
+    function initStoryData(){
+      axios.get(apis.apiUrl.story+localStorage.getItem("adminId")).then(res=>{
+        for(let i = 0;i<res.data.data.length;i++){
+          storyData.datas.push(res.data.data[i])
+        }
+      })
+    }
+
+    function pushStory(){
+      let data:StoryForm={
+        adminId:store.getters.getAdminId,
+        content:pushData.content,
+        title:pushData.title
+      }
+      axios.post(apis.apiUrl.story,data).then(res=>{
+        router.go(0)
+      })
+    }
+
+    function deleteStory(storyId:number){
+      axios.delete(apis.apiUrl.story+storyId).then(res=>{
+        router.go(0)
+      })
+    }
+
+    function updateStory(storyId:number){
+      storyIdNum.value=storyId
+      updateCardStatus.value = !updateCardStatus.value
+    }
+
+    function back(){
+      updateCardStatus.value = !updateCardStatus.value
+    }
+
+    return{
+      pushData,
+      pushStory,
+      storyData,
+      deleteStory,
+      updateStory,
+      storyIdNum,
+      updateCardStatus,
+      back
+    }
+  }
 })
 </script>
 
@@ -67,7 +107,7 @@ export default defineComponent({
 @import "../../../assets/style/mixin.scss";
 .story-mng-box {
   /*width: 00px;*/
-
+  position: relative;
 
   margin-bottom: 30px;
   transition: all 0.3s;
@@ -108,7 +148,7 @@ export default defineComponent({
       margin-bottom: 20px;
     }
 
-    .dynamic-push {
+    .update-push {
       padding: 10px;
       border: 1px solid #1ABC9C;
       color: #1ABC9C;
@@ -153,6 +193,13 @@ export default defineComponent({
         }
       }
     }
+  }
+  .no-story{
+    background-color: #F7DC6F;
+    padding: 70px;
+    color: white;
+    margin-top: 30px;
+
   }
 }
 
