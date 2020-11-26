@@ -6,7 +6,7 @@ import './assets/style/mixin.scss'
 import axios from 'axios'
 
 axios.interceptors.request.use(config => {
-  config.headers['token'] = localStorage.getItem("token")
+  config.headers['token'] = sessionStorage.getItem("token")
   return config
 })
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="story-mng-box">
+  <div class="story-mng-box" :class="{'loginfo-transition-begin':loginfoStatus,'loginfo-transition-end':!loginfoStatus}">
     <div class="story-header">
       <input type="text" placeholder="事迹标题" v-model="pushData.title">
       <textarea placeholder="我有灵感了....." v-model="pushData.content"></textarea>
@@ -26,13 +26,14 @@
 <script lang="ts">
 import {defineComponent, reactive, ref} from 'vue'
 
-import {pushData,pushStory,storyData,initStoryData} from "@/script/story/storyScript";
+
 import {useStore} from "vuex";
 import {StoryForm, StoryModel} from "@/model/datas";
 import UpdateCard from "@/components/common/UpdateCard.vue";
 import axios from "axios";
 import apis from "@/common/apis";
 import router from "@/router";
+import {cmsMngInit} from "@/script/transitionInit";
 export default defineComponent({
   name: "StoryMng",
   components:{
@@ -56,7 +57,7 @@ export default defineComponent({
 
 
     function initStoryData(){
-      axios.get(apis.apiUrl.story+localStorage.getItem("adminId")).then(res=>{
+      axios.get(apis.apiUrl.story+Number(sessionStorage.getItem("adminId"))).then(res=>{
         for(let i = 0;i<res.data.data.length;i++){
           storyData.datas.push(res.data.data[i])
         }
@@ -65,7 +66,7 @@ export default defineComponent({
 
     function pushStory(){
       let data:StoryForm={
-        adminId:store.getters.getAdminId,
+        adminId:Number(sessionStorage.getItem("adminId")),
         content:pushData.content,
         title:pushData.title
       }
@@ -97,7 +98,8 @@ export default defineComponent({
       updateStory,
       storyIdNum,
       updateCardStatus,
-      back
+      back,
+      ...cmsMngInit()
     }
   }
 })

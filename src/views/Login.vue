@@ -6,10 +6,18 @@
       </div>
       <div class="login-right-login">
         <div class="login-main">
-          <input class="input-phone" type="text" placeholder="手机号" maxlength="11" v-model="phone">
-          <input class="input-code" type="text" placeholder="验证码" maxlength="4" v-model="code">
-          <div class="send-sms" @click="sendSms" v-if="status==false">发送验证码</div>
+          <div class="account">
+            <h1>ACCOUNT</h1>
+            <input class="input-phone" type="text" placeholder="手机号" maxlength="11" v-model="phone">
+            <h1 class="error-msg" v-if="accountErrorMsg!=''">{{accountErrorMsg}}</h1>
+          </div>
+         <div class="smscode">
+           <h1>SMSCODE</h1>
+           <input class="input-code" type="text" placeholder="验证码" maxlength="4" v-model="code">
+           <h1 class="error-msg" v-if="smsErrorMsg!=''">{{smsErrorMsg}}</h1>
+         </div>
 
+          <div class="send-sms" @click="sendSms" v-if="status==false" :class="{'no-active':phone.length<11||phone.length>11}">发送验证码</div>
           <div class="send-sms" @click="sendSms" v-else :class="{'no-active':status}">{{title}}</div>
           <div class="login" @click="login">登录</div>
         </div>
@@ -35,9 +43,21 @@ export default defineComponent({
     const status = ref(false)
     const phone = ref('')
     const code = ref('')
+    const smsErrorMsg = ref('')
+    const accountErrorMsg = ref('')
+
+
 
     function sendSms(){
       axios.get(apis.apiUrl.admin+'sms/'+phone.value)
+        .then()
+        .catch(error=>{
+          if(error.status == 405){
+            // smsErrorMsg.value = '😊'+error.data.errorMsg
+            smsErrorMsg.value = '😭'+'你好像没有传参'
+          }
+          smsErrorMsg.value = '😊'+error.data.errorMsg
+        })
       status.value = true
       title.value = "还剩"+(60-time.value)+"秒"
       const times = setInterval(()=>{
@@ -58,15 +78,15 @@ export default defineComponent({
         smsCode:code.value
       }).then(res=>{
         let payload = jwt.decode(res.data.data,'sue')
-        console.log(payload)
-        console.log(payload.adminId)
-        localStorage.setItem("token",res.data.data)
-        console.log(res.data.data)
-        localStorage.setItem("adminId",payload.adminId)
-        localStorage.setItem("isRoot",payload.isRoot)
-        localStorage.setItem("name",payload.name)
-        localStorage.setItem("face",payload.face)
+        sessionStorage.setItem("token",res.data.data)
+        sessionStorage.setItem("adminId",payload.adminId)
+        sessionStorage.setItem("isRoot",payload.isRoot)
+        sessionStorage.setItem("name",payload.name)
+        sessionStorage.setItem("face",payload.face)
         router.replace("/home")
+      }).catch(error=>{
+        console.log(error)
+        accountErrorMsg.value = "🤨账号异常"
       })
     }
 
@@ -76,7 +96,9 @@ export default defineComponent({
       status,
       phone,
       code,
-      login
+      login,
+      smsErrorMsg,
+      accountErrorMsg
     }
   }
 })
@@ -114,8 +136,35 @@ export default defineComponent({
           border-left: 5px solid #42b983;
           @include shadow();
         }
-        .input-code{
-          margin-top: 20px;
+
+
+        .account{
+          margin-bottom: 30px;
+          text-align: left;
+          position: relative;
+          h1{
+            margin-bottom: 5px;
+          }
+          .error-msg{
+            position: absolute;
+            left: 380px;
+            width: 500px;
+            top: 50px;
+          }
+        }
+        .smscode{
+          text-align: left;
+          position: relative;
+          h1{
+            margin-bottom: 5px;
+          }
+          .error-msg{
+            position: absolute;
+            left: 380px;
+            width: 500px;
+
+            top: 50px;
+          }
         }
 
         .no-active{
@@ -124,7 +173,7 @@ export default defineComponent({
         }
         .send-sms{
           position: absolute;
-          top:150px;
+          top:240px;
           padding: 10px;
           border-radius: 5px;
           cursor: pointer;
@@ -141,7 +190,7 @@ export default defineComponent({
         .login{
           position: absolute;
           width: 120px;
-          top:150px;
+          top:240px;
           left: 130px;
           padding: 10px;
           border-radius: 5px;

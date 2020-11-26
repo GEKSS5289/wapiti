@@ -2,13 +2,13 @@
   <header-nav></header-nav>
   <div class="page-home">
     <div class="page-home-header">
-      <cms-mng></cms-mng>
-      <log-info></log-info>
-      <CheckPending></CheckPending>
+      <cms-mng :class="{'cmsMng-transition-begin':cmsMngstatus,'cmsMng-transition-end':!cmsMngstatus}"></cms-mng>
+      <log-info :class="{'loginfo-transition-begin':loginfoStatus,'loginfo-transition-end':!loginfoStatus}"></log-info>
+      <CheckPending :class="{'check-mng-transition-begin':checkMngStatus,'check-mng-transition-end':!checkMngStatus}"></CheckPending>
     </div>
     <div class="page-home-middle">
-      <task-container></task-container>
-      <mng-center></mng-center>
+      <task-container :class="{'task-container-transition-begin':taskContainerStatus,'task-container-transition-end':!taskContainerStatus}"></task-container>
+      <mng-center :class="{'mng-center-transition-begin':mngCenterStatus,'mng-center-transition-end':!mngCenterStatus}"></mng-center>
     </div>
 
   </div>
@@ -23,6 +23,7 @@ import TaskContainer from "@/components/home/TaskContainer.vue";
 import MngCenter from "@/components/home/MngCenter.vue";
 import Preview from "@/components/home/Preview.vue";
 import HeaderNav from "@/components/common/HeaderNav.vue";
+import {cmsMngInit} from "@/script/transitionInit";
 export default defineComponent({
   name: 'Home',
   components: {
@@ -33,6 +34,11 @@ export default defineComponent({
     MngCenter,
     Preview,
     HeaderNav
+  },
+  setup(){
+    return{
+      ...cmsMngInit()
+    }
   }
 })
 </script>

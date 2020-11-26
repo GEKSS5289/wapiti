@@ -24,7 +24,7 @@ export default defineComponent({
   setup(){
 
     return{
-      isRoot:localStorage.getItem("isRoot")=='true'?1:0
+      isRoot:sessionStorage.getItem("isRoot")=='true'?1:0
     }
   }
 })

@@ -2,10 +2,10 @@ import { createStore } from 'vuex'
 
 export default createStore({
   state: {
-    adminId: localStorage.getItem("adminId"),
-    isRoot:localStorage.getItem("isRoot"),
-    face:localStorage.getItem("face"),
-    name:localStorage.getItem("name")
+    adminId: sessionStorage.getItem("adminId"),
+    isRoot:sessionStorage.getItem("isRoot"),
+    face:sessionStorage.getItem("face"),
+    name:sessionStorage.getItem("name")
   },
   mutations: {
   },

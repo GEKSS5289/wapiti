@@ -1,5 +1,5 @@
 <template>
-  <div class="video-mng-box">
+  <div class="video-mng-box" :class="{'cmsMng-transition-begin':cmsMngstatus,'cmsMng-transition-end':!cmsMngstatus}">
     <div class="video-list" v-if="resData.datas.length!=0">
       <div class="video-item" v-for="(item,index) in resData.datas" :key="item.id">
         <video controls :src="item.resPath"/>
@@ -14,28 +14,36 @@
     </div>
     <div class="video-create">
       <h1>视频上传</h1>
-      <label for="file">
-        <img class="file-img" src="../../../../public/static/add.png" alt="">
-      </label>
-      <input class="file-input" id="file" type="file" @change="fileSelect" accept="video/mp4">
-      <h1 class="file-info-name">{{resData.filename}}</h1>
-      <h1 class="file-info-size" v-if="resData.filesize">{{resData.filesize}}MB</h1>
-      <h1 class="file-info-size" v-else>未上传文件</h1>
-      <div class="upload-btn" @click="uploadFile" v-if="resData.filename">上传</div>
+      <div class="uploadmain" v-if="!loadingStatus">
+        <label for="file">
+          <img class="file-img" src="../../../../public/static/add.png" alt="">
+        </label>
+        <input class="file-input" id="file" type="file" @change="fileSelect" accept="video/mp4">
+        <h1 class="file-info-name">{{resData.filename}}</h1>
+        <h1 class="file-info-size" v-if="resData.filesize">{{resData.filesize}}MB</h1>
+        <h1 class="file-info-size" v-else>未上传文件</h1>
+        <div class="upload-btn" @click="uploadFile" v-if="resData.filename">上传</div>
+      </div>
+      <loading v-if="loadingStatus"></loading>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import {defineComponent,reactive} from 'vue'
+import {defineComponent,reactive,ref} from 'vue'
 import {useStore} from "vuex";
 import {ResModel, StoryForm, StoryModel} from "@/model/datas";
 import UpdateCard from "@/components/common/UpdateCard.vue";
 import axios from "axios";
 import apis from "@/common/apis";
 import router from "@/router";
+import Loading from "@/components/common/Loading.vue";
+import {cmsMngInit} from "@/script/transitionInit";
 export default defineComponent({
   name: "VideoMng",
+  components:{
+    Loading
+  },
   setup(){
 
     const resData = reactive({
@@ -45,6 +53,7 @@ export default defineComponent({
     })
     const formdata = new FormData()
     const store = useStore()
+    const loadingStatus = ref(false)
     initData()
     function initData(){
       axios.get(apis.apiUrl.res).then(res=>{
@@ -67,11 +76,14 @@ export default defineComponent({
     }
 
     function uploadFile(){
+      loadingStatus.value = true
       resData.filename = '';
       resData.filesize = 0
-      axios.post(apis.apiUrl.res+localStorage.getItem("adminId"),formdata,{
+      axios.post(apis.apiUrl.res+sessionStorage.getItem("adminId"),formdata,{
         headers:{'Content-Type':'multipart/form-data'}
+
       }).then(res=>{
+        loadingStatus.value = false
         console.log("ok")
         formdata.delete("file")
         router.go(0)
@@ -82,7 +94,9 @@ export default defineComponent({
       resData,
       controlRes,
       fileSelect,
-      uploadFile
+      uploadFile,
+      loadingStatus,
+      ...cmsMngInit()
     }
   }
 })
@@ -138,10 +152,14 @@ export default defineComponent({
   }
 
   .video-create{
-    margin-top: 50px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    margin-top: 120px;
+   .uploadmain{
+
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     justify-content: center;
+   }
 
     .file-img{
       cursor:pointer;

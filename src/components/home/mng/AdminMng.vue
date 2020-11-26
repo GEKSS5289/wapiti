@@ -1,6 +1,6 @@
 <template>
-  <div class="admin-mng-box">
-    <div class="admin-list" v-if="adminData.datas.length!=0">
+  <div class="admin-mng-box" :class="{'cmsMng-transition-begin':cmsMngstatus,'cmsMng-transition-end':!cmsMngstatus}" >
+    <div class="admin-list" v-if="adminData.datas.length!=0" >
       <div class="admin-item" v-for="(item,index) in adminData.datas" :key="item.id" :class="{'freeze-style':item.isFreeze}">
         <div class="admin-info">
           <h1 class="admin-emoji">{{item.adminFace}}</h1>
@@ -20,9 +20,10 @@
     <div class="add-admin">
       <h1>添加管理员</h1>
       <h1 class="admin-icon">😁</h1>
-      <input type="text" placeholder="输入管理员name" v-model="pushData.adminName">
+      <input type="text" placeholder="输入管理员name" v-model="pushData.adminName" maxlength="10">
       <input type="text" placeholder="输入管理员手机号" maxlength="11" v-model="pushData.adminAccount">
-      <h1 class="admin-push" @click="addAdmin">添加</h1>
+      <h1 class="error-msg" v-if="pushData.errorMsgStatus">{{pushData.errorMsgCotent}}</h1>
+      <h1 class="admin-push" @click="addAdmin" :class="{'no-active':pushData.adminAccount.length>11||pushData.adminAccount<11}">添加</h1>
     </div>
   </div>
 </template>
@@ -34,6 +35,7 @@ import apis from "@/common/apis";
 import router from "@/router";
 import {AdminModel} from "@/model/datas";
 import {useStore} from "vuex";
+import {cmsMngInit} from "@/script/transitionInit";
 export default defineComponent({
   name: "AdminMng",
   setup(){
@@ -41,7 +43,9 @@ export default defineComponent({
     const pushData = reactive({
       adminFace:'🌠',
       adminName:'',
-      adminAccount:''
+      adminAccount:'',
+      errorMsgStatus:false,
+      errorMsgCotent:''
     })
 
     const adminData = reactive({
@@ -56,7 +60,7 @@ export default defineComponent({
         for(let i = 0;i<res.data.data.length;i++){
           adminData.datas.push(res.data.data[i])
         }
-       adminData.datas =  adminData.datas.filter(a=>a.id != store.getters.getAdminId)
+       adminData.datas =  adminData.datas.filter(a=>a.id != Number(sessionStorage.getItem("adminId")))
       })
     }
 
@@ -68,6 +72,12 @@ export default defineComponent({
       }).then(res=>{
         console.log(res)
         router.go(0)
+        pushData.errorMsgStatus = false
+      }).catch(err=>{
+
+          pushData.errorMsgStatus = true
+          pushData.errorMsgCotent = "用户已存在"
+
       })
     }
 
@@ -108,7 +118,8 @@ export default defineComponent({
       thaw,
       upgradeAdmin,
       demoteAdmin,
-      deleteAdmin
+      deleteAdmin,
+      ...cmsMngInit()
     }
   }
 })
@@ -197,6 +208,15 @@ export default defineComponent({
       }
     }
   }
+  .error-msg{
+    margin-bottom: 10px;
+    background: #E74C3C;
+    width: 800px;
+    text-align: center;
+    border-radius: 10px;
+    color: white;
+
+  }
   .no-admin{
     background-color: #F7DC6F;
     color:white;
@@ -210,6 +230,10 @@ export default defineComponent({
     padding: 10px;
     display: flex;
     flex-direction: column;
+    .no-active{
+      pointer-events: none;
+      opacity: 0.5;
+    }
     .admin-icon{
       margin-top: 20px;
       margin-bottom: 20px;

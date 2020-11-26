@@ -44,6 +44,7 @@ export default defineComponent({
         for(let i = 0;i<res.data.data.length;i++){
           resData.datas.push(res.data.data[i])
         }
+        console.log(res)
       })
     }
 
@@ -65,7 +66,7 @@ export default defineComponent({
       resData,
       pass,
       nopass,
-      isRoots:localStorage.getItem("isRoot")=='true'?1:0
+      isRoots:sessionStorage.getItem("isRoot")=='true'?1:0
     }
   }
 })

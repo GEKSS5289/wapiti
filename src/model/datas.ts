@@ -63,5 +63,9 @@ export interface AdminForm{
 }
 
 
+export interface LogsModel{
+  logContent:string;
+  createdTiem:Date;
 
+}
 

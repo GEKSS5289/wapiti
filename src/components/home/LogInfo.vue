@@ -1,20 +1,41 @@
 <template>
-    <div class="log-info-box">
-      <h1>🥪操作日志</h1>
-      <div class="log-list">
-        <div class="log-list-item">
-          <h3 class="log-content">发布了新闻</h3>
-          <h3 class="log-create-time">2020-11:11</h3>
-        </div>
+  <div class="log-info-box" >
+    <h1>🥪世界</h1>
+    <div class="log-list" v-if="logsData.datas.length!=0">
+      <div class="log-list-item" v-for="(item,index) in logsData.datas" :key="index">
+        <h3 class="log-content">{{item.logContent}}</h3>
+        <h3 class="log-create-time">{{item.createdTiem}}</h3>
       </div>
     </div>
+    <h1 class="no-logs" v-else>毫无音讯...</h1>
+  </div>
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue'
-
+import {defineComponent,reactive} from 'vue'
+import {LogsModel} from "@/model/datas";
+import apis from "@/common/apis";
+import axios from 'axios'
 export default defineComponent({
-  name: "LogInfo"
+  name: "LogInfo",
+  setup(){
+    const logsData = reactive({
+      datas:Array<LogsModel>()
+    })
+
+    initData()
+    function initData(){
+      axios.get(apis.apiUrl.logs).then(res=>{
+        for(let i = 0;i<res.data.data.length;i++){
+          logsData.datas.push(res.data.data[i])
+        }
+      })
+    }
+
+    return{
+      logsData
+    }
+  }
 })
 </script>
 
@@ -29,6 +50,7 @@ export default defineComponent({
     overflow-y: auto;
     .log-list-item{
       margin-bottom: 5px;
+      width: 300px;
       justify-content: space-between;
       display: flex;
       align-items: center;
@@ -37,7 +59,7 @@ export default defineComponent({
       background-color: #E8F6F3;
       padding: 10px;
       .log-content{
-        margin-right: 50px;
+        margin-right: 20px;
 
       }
       .log-create-time{
@@ -46,5 +68,11 @@ export default defineComponent({
     }
   }
   //flex: 1;
+  .no-logs{
+    padding: 20px;
+
+    margin-top: 40px;
+    color: #1ABC9C;
+  }
 }
 </style>

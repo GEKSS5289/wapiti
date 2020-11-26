@@ -1,5 +1,5 @@
 <template>
-  <div class="task-mng-box">
+  <div class="task-mng-box" :class="{'loginfo-transition-begin':loginfoStatus,'loginfo-transition-end':!loginfoStatus}">
     <div class="release-task-list" v-if="taskData.datas.length!=0">
       <div class="release-task-item" v-for="(item,index) in taskData.datas"
            :class="{'low-task':item.taskLevel==0,'middle-task':item.taskLevel==1,'hight-task':item.taskLevel==2}
@@ -29,9 +29,10 @@
           <div class="select-performer" @click="selectAdmin" v-if="selectStatus">选择执行人</div>
           <div class="select-performer" @click="selectAdmin" v-else>执行人:{{pushData.executorName}}</div>
           <div class="push-task-btn" @click="pushTask">发布任务</div>
+          <h1 class="error-msg" :class="{'loginfo-transition-begin':!pushData.errorMsg,'loginfo-transition-end':pushData.errorMsg}" >{{pushData.errorMsg}}</h1>
         </div>
       </div>
-      <div class="performer-list" v-if="adminsStatus">
+      <div class="performer-list" :class="{'loginfo-transition-begin':!adminsStatus,'loginfo-transition-end':adminsStatus}">
         <div class="performer-item" v-for="(item,index) in adminData.datas" @click="assign(item.id,item.adminName)">
           <h1 class="admin-emoji">{{item.adminFace}}</h1>
           <h1 class="admin-name">{{item.adminName}}</h1>
@@ -49,6 +50,7 @@ import {AdminModel, TaskModel} from "@/model/datas";
 import axios from "axios";
 import apis from "@/common/apis";
 import router from "@/router";
+import {cmsMngInit} from "@/script/transitionInit";
 export default defineComponent({
   name: "TaskMng",
   setup(){
@@ -57,12 +59,13 @@ export default defineComponent({
     const adminsStatus = ref(false)
     const selectStatus = ref(true)
     const pushData = reactive({
-      executorId:0,
-      publisherId:localStorage.getItem("adminId"),
+      executorId:'',
+      publisherId:Number(sessionStorage.getItem("adminId")),
       taskTitle:'',
       taskContent:'',
       taskLevel:0,
-      executorName:''
+      executorName:'',
+      errorMsg:''
     })
     const adminData = reactive({
       datas:Array<AdminModel>()
@@ -71,10 +74,9 @@ export default defineComponent({
       datas:Array<TaskModel>()
     })
     initDataAdmin()
-
     initDataTask()
     function initDataTask(){
-      axios.get(apis.apiUrl.task+'rel/'+localStorage.getItem("adminId")).then(res=>{
+      axios.get(apis.apiUrl.task+'rel/'+Number(sessionStorage.getItem("adminId"))).then(res=>{
         console.log(res)
         for(let i = 0;i<res.data.data.length;i++){
           taskData.datas.push(res.data.data[i])
@@ -94,7 +96,7 @@ export default defineComponent({
       adminsStatus.value = !adminsStatus.value
     }
 
-    function assign(executorId:number,adminName:string){
+    function assign(executorId:string,adminName:string){
       selectStatus.value = false
       pushData.executorId = executorId
       pushData.executorName = adminName
@@ -116,6 +118,20 @@ export default defineComponent({
       }).then(res=>{
         console.log(res)
         router.go(0)
+      }).catch(err=>{
+        if(err.data.executorId){
+          pushData.errorMsg = err.data.executorId
+        }else if(err.data.taskTitle){
+          pushData.errorMsg = err.data.taskTitle
+        }else if(err.data.taskContent){
+          pushData.errorMsg = err.data.taskContent
+        }else if(err.data.taskLevel){
+          pushData.errorMsg = err.data.taskLevel
+        }else{
+          pushData.errorMsg = err.data.publisherId
+        }
+
+
       })
     }
 
@@ -137,7 +153,8 @@ export default defineComponent({
       selectLevel,
       assign,
       pushTask,
-      abolish
+      abolish,
+      ...cmsMngInit()
     }
   }
 })
@@ -327,6 +344,10 @@ export default defineComponent({
           color: white;
           font-weight: bold;
           cursor: pointer;
+        }
+        .error-msg{
+          margin-left: 30px;
+          color: #E74C3C;
         }
       }
 

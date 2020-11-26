@@ -1,5 +1,5 @@
 <template>
-  <div class="cms-me-box">
+  <div class="cms-me-box" >
     <h1 class="cms-me-icon">{{face}}</h1>
     <h4 class="cms-me-admin-name">{{name}}</h4>
     <h1 @click="logout">退出</h1>
@@ -9,21 +9,20 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import router from "@/router";
+import {cmsMngInit} from "@/script/transitionInit";
 export default defineComponent({
   name: "CmsMng",
   setup(){
     function logout(){
-      localStorage.setItem("admin","")
-      localStorage.setItem("isRoot","")
-      localStorage.setItem("face","")
-      localStorage.setItem("name","")
+      sessionStorage.clear()
       router.push('/')
     }
 
     return{
-      face:localStorage.getItem("face"),
-      name:localStorage.getItem("name"),
-      logout
+      face:sessionStorage.getItem("face"),
+      name:sessionStorage.getItem("name"),
+      logout,
+
     }
   }
 })
