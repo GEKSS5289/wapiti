@@ -1,4 +1,4 @@
-const baseUrl = 'http://192.168.2.207:5288/';
+const baseUrl = 'http://8.129.226.8:5288/';
 
 const taskApiUrl = {
   finish:'finish',

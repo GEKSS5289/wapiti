@@ -2,6 +2,7 @@ import {ref} from "vue";
 import router from "@/router";
 
 export const cmsMngInit = () => {
+  window.scrollTo(0,0);
 
   const cmsMngstatus = ref(true)
   const loginfoStatus = ref(true)

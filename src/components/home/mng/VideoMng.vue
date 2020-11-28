@@ -153,6 +153,7 @@ export default defineComponent({
 
   .video-create{
     margin-top: 120px;
+    margin-bottom: 130px;
    .uploadmain{
 
      display: flex;

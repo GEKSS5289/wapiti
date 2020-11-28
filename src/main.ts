@@ -15,9 +15,24 @@ axios.interceptors.response.use(config => {
   return config
 }, error => {
   if (error.response) {
+    let errorCode = error.response.data.data.errorCode;
     if (error.response.status === 403) {
       router.push("/")
     }
+    if(errorCode == 4005){
+      sessionStorage.clear()
+      router.push("/")
+    }
+    if(errorCode == 4006){
+      sessionStorage.clear()
+      router.push("/")
+    }
+    if(errorCode == 4002){
+      sessionStorage.clear()
+      router.push("/")
+
+    }
+
   }
       // window.alert('服务器正忙，请稍后重试')
 

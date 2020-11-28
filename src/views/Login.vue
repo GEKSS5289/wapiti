@@ -1,5 +1,5 @@
 <template>
-  <div class="page-login">
+  <div class="page-login" :class="{'cmsMng-transition-begin':cmsMngstatus,'cmsMng-transition-end':!cmsMngstatus}">
     <div class="login-area">
       <div class="login-left-info">
         <h1 class="title">WAPITICMS🌲SUE</h1>
@@ -16,15 +16,18 @@
            <input class="input-code" type="text" placeholder="验证码" maxlength="4" v-model="code">
            <h1 class="error-msg" v-if="smsErrorMsg!=''">{{smsErrorMsg}}</h1>
          </div>
-
           <div class="send-sms" @click="sendSms" v-if="status==false" :class="{'no-active':phone.length<11||phone.length>11}">发送验证码</div>
-          <div class="send-sms" @click="sendSms" v-else :class="{'no-active':status}">{{title}}</div>
+          <div class="send-sms" :class="{'no-active':status}" v-else >{{title}}</div>
           <div class="login" @click="login">登录</div>
         </div>
       </div>
     </div>
 
     <!--    <router-link to="Home">fdsaf</router-link>-->
+  </div>
+  <div class="friendly-prompt" :class="{'loginfo-transition-begin':loginfoStatus,'loginfo-transition-end':!loginfoStatus}">
+    <h1 class="">📌书山有路，勤为近</h1>
+
   </div>
 </template>
 
@@ -34,6 +37,7 @@ import axios from "axios";
 import apis from "@/common/apis";
 import jwt from 'jwt-simple'
 import router from "@/router";
+import {cmsMngInit} from "@/script/transitionInit";
 export default defineComponent({
   name: "Login",
   setup(){
@@ -50,29 +54,46 @@ export default defineComponent({
 
     function sendSms(){
       axios.get(apis.apiUrl.admin+'sms/'+phone.value)
-        .then()
+        .then(res=>{
+          status.value = true
+          title.value = "还剩"+(60-time.value)+"秒"
+          const times = setInterval(()=>{
+            if(time.value == 60){
+              // clearInterval()
+              status.value = false
+              clearInterval(times)
+            }else{
+              time.value++
+              title.value = "还剩"+(60-time.value)+"秒"
+            }
+          },1000)
+          time.value = 0
+        })
         .catch(error=>{
+          console.log(error)
+          let errorCode = error.data.errorCode
+          let errorMsg = error.data.errorMsg
           if(error.status == 405){
             // smsErrorMsg.value = '😊'+error.data.errorMsg
-            smsErrorMsg.value = '😭'+'你好像没有传参'
+            smsErrorMsg.value = '😭'+'ACCOUNT OR SMSCODE ERROR'
           }
-          smsErrorMsg.value = '😊'+error.data.errorMsg
+          if(error.status == 400){
+            smsErrorMsg.value = '🙃'+error.data
+          }
+          if(errorCode == 5001){
+            smsErrorMsg.value = '😊'+errorMsg
+          }
+          if(errorCode == 4003){
+            smsErrorMsg.value = '😊'+errorMsg
+          }
         })
-      status.value = true
-      title.value = "还剩"+(60-time.value)+"秒"
-      const times = setInterval(()=>{
-        if(time.value == 60){
-          // clearInterval()
-          status.value = false
-          clearInterval(times)
-        }else{
-          time.value++
-          title.value = "还剩"+(60-time.value)+"秒"
-        }
-      },1000)
+
     }
 
     function login(){
+
+      smsErrorMsg.value = ''
+      accountErrorMsg.value = ''
       axios.post(apis.apiUrl.admin+"login",{
         adminAccount:phone.value,
         smsCode:code.value
@@ -83,10 +104,23 @@ export default defineComponent({
         sessionStorage.setItem("isRoot",payload.isRoot)
         sessionStorage.setItem("name",payload.name)
         sessionStorage.setItem("face",payload.face)
+        sessionStorage.setItem("isFreeze",payload.isFreeze)
         router.replace("/home")
       }).catch(error=>{
         console.log(error)
-        accountErrorMsg.value = "🤨账号异常"
+        if(error.data.smsCode){
+          smsErrorMsg.value = '😊'+error.data.smsCode
+        }
+        if(error.data.adminAccount){
+          accountErrorMsg.value = '😊'+error.data.adminAccount
+        }
+        if(error.data.errorCode==5001){
+          smsErrorMsg.value = '🌖'+error.data.errorMsg
+        }
+        if(error.data.errorCode == 4003){
+          accountErrorMsg.value = '😊'+error.data.errorMsg
+        }
+
       })
     }
 
@@ -98,7 +132,10 @@ export default defineComponent({
       code,
       login,
       smsErrorMsg,
-      accountErrorMsg
+      accountErrorMsg,
+
+        ...cmsMngInit()
+
     }
   }
 })
@@ -110,7 +147,8 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 1080px;
+  height: 600px;
+  margin-top: 120px;
   .login-area{
     width: 1226px;
     display: flex;
@@ -210,6 +248,17 @@ export default defineComponent({
 
     }
   }
+}
 
+.friendly-prompt{
+
+  width: 1226px;
+  margin: 0 auto;
+  background-color:#FBFCFC;
+  text-align: left;
+  padding: 50px;
+  border-radius: 20px;
+
+  color:#888888;
 }
 </style>

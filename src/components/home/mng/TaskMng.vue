@@ -4,7 +4,7 @@
       <div class="release-task-item" v-for="(item,index) in taskData.datas"
            :class="{'low-task':item.taskLevel==0,'middle-task':item.taskLevel==1,'hight-task':item.taskLevel==2}
       ">
-        <h1 class="task-name">{{item.taskTitle}}<span style="font-size: 15px;margin-left: 10px;" v-if="item.finishTime">完成时间:2010-11-12</span></h1>
+        <h1 class="task-name">{{item.taskTitle}}<span style="font-size: 15px;margin-left: 10px;" v-if="item.finishTime">完成时间:{{item.finishTime}}</span></h1>
         <h2 class="task-remark">{{item.taskContent}}</h2>
         <div class="task-info">
           <h2 class="task-abolish" v-if="item.taskStatus!=2&&item.taskStatus!=1" @click="abolish(item.id)">废除</h2>

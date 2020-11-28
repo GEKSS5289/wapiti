@@ -43,14 +43,14 @@ export default defineComponent({
 @import "../../assets/style/mixin";
 .log-info-box{
   @include generalBox();
-
+  flex: 1;
   .log-list{
     margin-top: 30px;
     height: 130px;
     overflow-y: auto;
     .log-list-item{
       margin-bottom: 5px;
-      width: 300px;
+      //width: 300px;
       justify-content: space-between;
       display: flex;
       align-items: center;
