@@ -181,9 +181,10 @@ export default defineComponent({
       border-radius: 15px;
       text-align: left;
       //height: 130px;
-      width: 350px;
+      //width: 350px;
 
       .task-name{
+
         color: white;
         margin-bottom: 10px;
       }
