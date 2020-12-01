@@ -35,7 +35,7 @@ export default defineComponent({
 
     initDataTask()
     function initDataTask(){
-      axios.get(apis.apiUrl.task+'me/'+Number(sessionStorage.getItem("adminId"))).then(res=>{
+      axios.get(apis.apiUrl.task+'me/'+Number(JSON.parse(sessionStorage.getItem("payload") as string).adminId)).then(res=>{
         console.log(res)
         for(let i = 0;i<res.data.data.length;i++){
           taskData.datas.push(res.data.data[i])

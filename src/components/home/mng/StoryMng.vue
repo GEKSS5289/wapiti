@@ -57,7 +57,8 @@ export default defineComponent({
 
 
     function initStoryData(){
-      axios.get(apis.apiUrl.story+Number(sessionStorage.getItem("adminId"))).then(res=>{
+
+      axios.get(apis.apiUrl.story+Number(JSON.parse(sessionStorage.getItem("payload") as string).adminId)).then(res=>{
         for(let i = 0;i<res.data.data.length;i++){
           storyData.datas.push(res.data.data[i])
         }
@@ -66,7 +67,7 @@ export default defineComponent({
 
     function pushStory(){
       let data:StoryForm={
-        adminId:Number(sessionStorage.getItem("adminId")),
+        adminId:Number(JSON.parse(sessionStorage.getItem("payload") as string).adminId),
         content:pushData.content,
         title:pushData.title
       }

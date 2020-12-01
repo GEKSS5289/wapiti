@@ -60,7 +60,7 @@ export default defineComponent({
     const selectStatus = ref(true)
     const pushData = reactive({
       executorId:'',
-      publisherId:Number(sessionStorage.getItem("adminId")),
+      publisherId:Number(JSON.parse(sessionStorage.getItem("payload") as string).adminId),
       taskTitle:'',
       taskContent:'',
       taskLevel:0,
@@ -76,7 +76,7 @@ export default defineComponent({
     initDataAdmin()
     initDataTask()
     function initDataTask(){
-      axios.get(apis.apiUrl.task+'rel/'+Number(sessionStorage.getItem("adminId"))).then(res=>{
+      axios.get(apis.apiUrl.task+'rel/'+Number(JSON.parse(sessionStorage.getItem("payload") as string).adminId)).then(res=>{
         console.log(res)
         for(let i = 0;i<res.data.data.length;i++){
           taskData.datas.push(res.data.data[i])

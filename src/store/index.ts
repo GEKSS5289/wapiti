@@ -5,7 +5,8 @@ export default createStore({
     adminId: sessionStorage.getItem("adminId"),
     isRoot:sessionStorage.getItem("isRoot"),
     face:sessionStorage.getItem("face"),
-    name:sessionStorage.getItem("name")
+    name:sessionStorage.getItem("name"),
+
   },
   mutations: {
   },

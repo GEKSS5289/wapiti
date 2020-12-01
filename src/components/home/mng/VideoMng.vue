@@ -79,7 +79,7 @@ export default defineComponent({
       loadingStatus.value = true
       resData.filename = '';
       resData.filesize = 0
-      axios.post(apis.apiUrl.res+sessionStorage.getItem("adminId"),formdata,{
+      axios.post(apis.apiUrl.res+Number(JSON.parse(sessionStorage.getItem("payload") as string).adminId),formdata,{
         headers:{'Content-Type':'multipart/form-data'}
 
       }).then(res=>{
@@ -127,6 +127,13 @@ export default defineComponent({
         flex: 1;
         display: flex;
         flex-wrap: wrap;
+        .video-name{
+          width: 160px;
+          word-break: break-all;
+
+          //height: 50px;
+          margin-bottom: 20px;
+        }
         h1{
           font-size: 15px;
           display: flex;
@@ -141,7 +148,6 @@ export default defineComponent({
 
         }
         .stop-play-btn{
-
           @include btnhover(#1ABC9C)
         }
         .update-btn{

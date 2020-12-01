@@ -100,11 +100,11 @@ export default defineComponent({
       }).then(res=>{
         let payload = jwt.decode(res.data.data,'sue')
         sessionStorage.setItem("token",res.data.data)
-        sessionStorage.setItem("adminId",payload.adminId)
         sessionStorage.setItem("isRoot",payload.isRoot)
         sessionStorage.setItem("name",payload.name)
         sessionStorage.setItem("face",payload.face)
         sessionStorage.setItem("isFreeze",payload.isFreeze)
+        sessionStorage.setItem("payload",JSON.stringify(payload))
         router.replace("/home")
       }).catch(error=>{
         console.log(error)
