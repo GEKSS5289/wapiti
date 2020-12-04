@@ -60,7 +60,7 @@ export default defineComponent({
         for(let i = 0;i<res.data.data.length;i++){
           adminData.datas.push(res.data.data[i])
         }
-       adminData.datas =  adminData.datas.filter(a=>a.id != Number(sessionStorage.getItem("adminId")))
+       adminData.datas =  adminData.datas.filter(a=>a.id != Number(JSON.parse(sessionStorage.getItem("payload") as string).adminId))
       })
     }
 
