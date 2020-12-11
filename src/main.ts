@@ -7,6 +7,11 @@ import axios from 'axios'
 
 axios.interceptors.request.use(config => {
   config.headers['token'] = sessionStorage.getItem("token")
+  config.headers['isRoot'] = sessionStorage.getItem("isRoot")
+  config.headers['isFreeze'] = sessionStorage.getItem("isFreeze")
+  // config.headers['name'] = sessionStorage.getItem("name")
+  // config.headers['face'] = sessionStorage.getItem("face")
+
   return config
 })
 
@@ -35,7 +40,6 @@ axios.interceptors.response.use(config => {
 
   }
       // window.alert('服务器正忙，请稍后重试')
-
   return Promise.reject(error.response.data)
 })
 
