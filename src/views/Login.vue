@@ -86,6 +86,9 @@ export default defineComponent({
           if(errorCode == 4003){
             smsErrorMsg.value = '😊'+errorMsg
           }
+          if(errorCode == 5002){
+            smsErrorMsg.value = '😊'+errorMsg
+          }
         })
 
     }
